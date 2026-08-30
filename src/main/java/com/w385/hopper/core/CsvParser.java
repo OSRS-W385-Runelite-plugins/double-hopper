@@ -16,6 +16,7 @@ public final class CsvParser {
 	/**
 	 * Reads a CSV content and stores it into a Map
 	 * Headings (columns name) must be unique and non-blank
+	 * CSV must not contain line feeds and comma in headings and values
 	 *
 	 * @param csv - the file contents to parse
 	 *
