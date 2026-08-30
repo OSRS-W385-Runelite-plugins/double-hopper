@@ -132,6 +132,4 @@ public final class CsvParserTest {
 		List<Map<String, String>> maps = this.parser.parse(emptyCsv);
 		assertThat(maps.size(), is(0));
 	}
-
-	// doesn't support quotes and escaping, headings and values must NOT contain "," or "\n"
 }
