@@ -6,33 +6,33 @@ import java.util.*;
 import static java.util.stream.Collectors.toList;
 
 /**
- * Maps hops from and to CSV format
+ * Maps hops from and to key-value format
  */
-public final class CsvHopMapper {
+public final class HopMapper {
 	/**
 	 * The name of the account column in the CSV
 	 */
-	private static final String ACCOUNT_HEADING_NAME = "account";
+	private static final String ACCOUNT_KEY = "account";
 
 	/**
 	 * The name of the datetime column in the CSV
 	 */
-	private static final String DATE_HEADING_NAME = "timestamp";
+	private static final String DATETIME_KEY = "timestamp";
 
 	/**
 	 * The name of the status column in the CSV
 	 */
-	private static final String STATUS_HEADING_NAME = "status";
+	private static final String STATUS_KEY = "status";
 
 	/**
 	 * The name of the source world column in the CSV
 	 */
-	private static final String SOURCE_WORLD_HEADING_NAME = "from_world";
+	private static final String SOURCE_WORLD_KEY = "from_world";
 
 	/**
 	 * The name of the destination world column in the CSV
 	 */
-	private static final String DESTINATION_WORLD_HEADING_NAME = "to_world";
+	private static final String DESTINATION_WORLD_KEY = "to_world";
 
 	/**
 	 * Turns the given map to a usable business object
@@ -44,11 +44,11 @@ public final class CsvHopMapper {
 	 * 	couldn't be transformed
 	 */
 	public Optional<Hop> toObject(Map<String, String> hop) {
-		String account = hop.get(ACCOUNT_HEADING_NAME);
-		LocalDateTime timestamp = transformTimestamp(hop.get(DATE_HEADING_NAME));
-		Status status = transformStatus(hop.get(STATUS_HEADING_NAME));
-		Integer sourceWorld = transformSourceWorld(hop.get(SOURCE_WORLD_HEADING_NAME));
-		Integer destinationWorld = transformDestinationWorld(hop.get(DESTINATION_WORLD_HEADING_NAME));
+		String account = hop.get(ACCOUNT_KEY);
+		LocalDateTime timestamp = transformTimestamp(hop.get(DATETIME_KEY));
+		Status status = transformStatus(hop.get(STATUS_KEY));
+		Integer sourceWorld = transformSourceWorld(hop.get(SOURCE_WORLD_KEY));
+		Integer destinationWorld = transformDestinationWorld(hop.get(DESTINATION_WORLD_KEY));
 
 		// constructor can't be called without causing NPE
 		if (destinationWorld == null)

@@ -21,7 +21,15 @@ public final class Hop {
 	 * The status, @see Status
 	 */
 	public final Status status;
+
+	/**
+	 * On which world the player was, null for login screen
+	 */
 	public final Integer fromWorld;
+
+	/**
+	 * On which world the player tried to hop
+	 */
 	public final int toWorld;
 
 	private Hop(String account, LocalDateTime datetime, Status status, Integer fromWorld, int toWorld) {

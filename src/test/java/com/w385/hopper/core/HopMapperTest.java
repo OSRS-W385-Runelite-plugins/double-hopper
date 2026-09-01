@@ -10,9 +10,9 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class CsvHopMapperTest {
+public class HopMapperTest {
 
-	private final CsvHopMapper mapper = new CsvHopMapper();
+	private final HopMapper mapper = new HopMapper();
 
 	private final String now = String.valueOf(
 		Instant.now()
