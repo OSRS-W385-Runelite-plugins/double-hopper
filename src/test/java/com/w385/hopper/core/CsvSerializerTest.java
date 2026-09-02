@@ -13,7 +13,7 @@ public class CsvSerializerTest {
 
 	private static final String LINE_SEPARATOR = "\n";
 
-	private final CsvSerializer serializer = new CsvSerializer();
+	private final CsvCodec serializer = new CsvCodec();
 
 	@Test
 	public void noMapNullCsv() {

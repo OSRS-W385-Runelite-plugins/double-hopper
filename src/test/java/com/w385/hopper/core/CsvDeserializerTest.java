@@ -10,7 +10,7 @@ import java.util.*;
 
 public final class CsvDeserializerTest {
 
-	private final CsvDeserializer deserializer = new CsvDeserializer();
+	private final CsvCodec deserializer = new CsvCodec();
 
 	@Test
 	public void nullCsv_noResult() {

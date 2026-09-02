@@ -2,16 +2,53 @@ package com.w385.hopper.core;
 
 import java.util.*;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toSet;
 
 /**
- * Very basic CSV deserializer, doesn't support quotes or escaping
+ * CSV serializer and deserializer
  */
-public final class CsvDeserializer {
+public final class CsvCodec {
 
 	private static final String LINE_SEPARATOR = "\n";
 
 	private static final String VALUE_SEPARATOR = ",";
+
+	/**
+	 * Serializes the given map to CSV format, without headings
+	 * To include headings, @see {@link #serialize(List)}.
+	 *
+	 * @param map - the map to serialize
+	 *
+	 * @return - the serialized map, null if none, blank string if empty map
+	 */
+	public String serialize(Map<String, String> map) {
+		if (map == null)
+			return null;
+
+		return String.join(VALUE_SEPARATOR, map.values());
+	}
+
+	/**
+	 * Serializes one or several maps with headings
+	 * Headings are the first map's keys
+	 *
+	 * @param maps - the map(s) to serialize
+	 *
+	 * @return - the serialized map(s), null if none, blank string if empty list
+	 */
+	public String serialize(List<Map<String, String>> maps) {
+		if (maps == null)
+			return null;
+
+		String headings = String.join(VALUE_SEPARATOR, maps.get(0).keySet());
+
+		String lines =  maps.stream()
+			.map(this::serialize)
+			.collect(joining(LINE_SEPARATOR));
+
+		return headings + LINE_SEPARATOR + lines;
+	}
 
 	/**
 	 * Deserializes a CSV content and stores it into a key-value format
@@ -28,21 +65,18 @@ public final class CsvDeserializer {
 		if (csv == null)
 			return List.of();
 
-		String[] lines = splitAndKeepEmpty(csv, LINE_SEPARATOR);
+		String[] lines = splitLines(csv);
 
-		String[] headings = splitAndKeepEmpty(lines[0], VALUE_SEPARATOR);
+		String[] headings = splitValues(lines[0]);
 		if (containsInvalidHeadings(headings))
 			return List.of();
 
 		var maps = new ArrayList<Map<String, String>>();
 
 		for (int i = 1; i < lines.length; i++) {
-			String[] values = splitAndKeepEmpty(lines[i], VALUE_SEPARATOR);
-			if (values.length != headings.length)
-				continue;
-
-			var map = zipmap(headings, values);
-			maps.add(map);
+			String[] values = splitValues(lines[i]);
+			if (values.length == headings.length)
+				maps.add(zipmap(headings, values));
 		}
 
 		return maps;
@@ -58,6 +92,28 @@ public final class CsvDeserializer {
 	 */
 	private static String[] splitAndKeepEmpty(String string, String separator) {
 		return string.split(separator, -1);
+	}
+
+	/**
+	 * Splits the CSV content into lines, keeping trailing blank ones
+	 *
+	 * @param csv - the CSV content to split
+	 *
+	 * @return - the CSV lines
+	 */
+	private static String[] splitLines(String csv) {
+		return splitAndKeepEmpty(csv, LINE_SEPARATOR);
+	}
+
+	/**
+	 * Splits the CSV values, keeping trailing blank elements
+	 *
+	 * @param values - the values to split
+	 *
+	 * @return - the CSV values
+	 */
+	private static String[] splitValues(String values) {
+		return splitAndKeepEmpty(values, VALUE_SEPARATOR);
 	}
 
 	/**
