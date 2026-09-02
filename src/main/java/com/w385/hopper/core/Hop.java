@@ -7,6 +7,7 @@ import java.util.Optional;
  * A player's connection attempt to a server
  */
 public final class Hop {
+
 	/**
 	 * Some unique ID for the account (account_hash being unavailable on failed login)
 	 */

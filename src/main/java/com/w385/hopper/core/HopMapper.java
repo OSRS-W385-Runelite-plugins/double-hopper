@@ -9,6 +9,7 @@ import static java.util.stream.Collectors.toList;
  * Maps hops from and to key-value format
  */
 public final class HopMapper {
+
 	/**
 	 * The name of the account column in the CSV
 	 */
