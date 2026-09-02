@@ -8,9 +8,7 @@ import java.util.*;
 
 public class HopTest {
 
-	private final ZoneId timezone = ZoneId.systemDefault();
-
-	LocalDateTime now = LocalDateTime.now(timezone);
+	private final Instant now = Instant.now();
 
 	@Test
 	public void accountCannotBeNull() {
@@ -28,22 +26,22 @@ public class HopTest {
 
 	@Test
 	public void datetimeCannotBeNull() {
-		LocalDateTime datetime = null;
-		Optional<Hop> hop = Hop.create("account", datetime, Status.SUCCESS, 1, 2);
+		Instant instant = null;
+		Optional<Hop> hop = Hop.create("account", instant, Status.SUCCESS, 1, 2);
 		assertTrue(hop.isEmpty());
 	}
 
 	@Test
 	public void hopsWhichHappenedMoreThan4HoursAgoAreIgnored() {
-		LocalDateTime datetime = now.minusHours(4).minusSeconds(5);
-		Optional<Hop> hop = Hop.create("account", datetime, Status.SUCCESS, 1, 2);
+		Instant instant = now.minusSeconds(60L * 60L * 4L + 5);
+		Optional<Hop> hop = Hop.create("account", instant, Status.SUCCESS, 1, 2);
 		assertTrue(hop.isEmpty());
 	}
 
 	@Test
 	public void hopsWhichHappenedLessThan4HoursAgoAreCreated() {
-		LocalDateTime datetime = now.minusHours(4).plusSeconds(5);
-		Optional<Hop> hop = Hop.create("account", datetime, Status.SUCCESS, 1, 2);
+		Instant instant = now.minusSeconds(60L * 60L * 4L - 5);
+		Optional<Hop> hop = Hop.create("account", instant, Status.SUCCESS, 1, 2);
 		assertTrue(hop.isPresent());
 	}
 

@@ -2,24 +2,21 @@ package com.w385.hopper.core;
 
 import org.junit.Test;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.Instant;
 import java.util.*;
 
 import static com.w385.hopper.core.Status.*;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.hasItem;
 
 public class HopMapperTest {
 
 	private final HopMapper mapper = new HopMapper();
 
-	private final LocalDateTime now = LocalDateTime.now();
+	private final Instant now = Instant.now();
 
-	private final String timestamp = String.valueOf(
-		now.atZone(ZoneId.systemDefault()).toEpochSecond());
+	private final String timestamp = String.valueOf(now.getEpochSecond());
 
 	@Test
 	public void timestampCannotBeNull() {

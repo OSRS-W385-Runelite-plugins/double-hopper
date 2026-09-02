@@ -15,7 +15,7 @@ public final class Hop {
 	/**
 	 * When the attempt happened
 	 */
-	public final LocalDateTime datetime;
+	public final Instant instant;
 
 	/**
 	 * The status, @see Status
@@ -32,9 +32,9 @@ public final class Hop {
 	 */
 	public final int toWorld;
 
-	private Hop(String account, LocalDateTime datetime, Status status, Integer fromWorld, int toWorld) {
+	private Hop(String account, Instant instant, Status status, Integer fromWorld, int toWorld) {
 		this.account = account;
-		this.datetime = datetime;
+		this.instant = instant;
 		this.status = status;
 		this.fromWorld = fromWorld;
 		this.toWorld = toWorld;
@@ -43,10 +43,10 @@ public final class Hop {
 	/**
 	 * Factory, applies domain logic to decide if it's worth instantiating
 	 */
-	public static Optional<Hop> create(String account, LocalDateTime datetime, Status status, Integer fromWorld, int toWorld) {
+	public static Optional<Hop> create(String account, Instant instant, Status status, Integer fromWorld, int toWorld) {
 		if (account == null || account.isBlank())
 			return Optional.empty();
-		if (datetime == null || isTooOld(datetime))
+		if (instant == null || isTooOld(instant))
 			return Optional.empty();
 		if (status == null)
 			return Optional.empty();
@@ -55,18 +55,18 @@ public final class Hop {
 		if (toWorld < 0)
 			return Optional.empty();
 
-		return Optional.of(new Hop(account, datetime, status, fromWorld, toWorld));
+		return Optional.of(new Hop(account, instant, status, fromWorld, toWorld));
 	}
 
 	/**
 	 * Checks if the given datetime is obsolete
 	 *
-	 * @param datetime - the time to check
+	 * @param instant - the instant to check
 	 *
 	 * @return - true if the datetime is too old to be relevant, false otherwise
 	 */
-	private static boolean isTooOld(LocalDateTime datetime) {
-		ZoneId timezone = ZoneId.systemDefault();
-		return datetime.isBefore(LocalDateTime.now(timezone).minusHours(4));
+	private static boolean isTooOld(Instant instant) {
+		Instant fourHoursAgo = Instant.now().minusSeconds(60L * 60L * 4L);
+		return instant.isBefore(fourHoursAgo);
 	}
 }
