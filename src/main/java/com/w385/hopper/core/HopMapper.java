@@ -58,6 +58,26 @@ public final class HopMapper {
 	}
 
 	/**
+	 * Turns the given hop to a map
+	 *
+	 * @param hop - the hop to map
+	 *
+	 * @return - the created map
+	 */
+	public Map<String, String> toMap(Hop hop) {
+		ZoneId timezone = ZoneId.systemDefault();
+		long timestamp =  hop.datetime.atZone(timezone).toEpochSecond();
+
+		return new HashMap<>() {{
+			put(ACCOUNT_KEY, hop.account);
+			put(DATETIME_KEY, String.valueOf(timestamp));
+			put(STATUS_KEY, hop.status.name());
+			put(SOURCE_WORLD_KEY, Objects.toString(hop.fromWorld, ""));
+			put(DESTINATION_WORLD_KEY, String.valueOf(hop.toWorld));
+		}};
+	}
+
+	/**
 	 * Converts the timestamp into a LocalDateTime
 	 *
 	 * @param timestamp - the String containing the timestamp
