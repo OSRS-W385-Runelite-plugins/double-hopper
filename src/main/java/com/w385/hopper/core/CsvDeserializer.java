@@ -5,26 +5,26 @@ import java.util.*;
 import static java.util.stream.Collectors.*;
 
 /**
- * Very basic CSV parser, doesn't support quotes or escaping
+ * Very basic CSV deserializer, doesn't support quotes or escaping
  */
-public final class CsvParser {
+public final class CsvDeserializer {
 
 	private static final String LINE_SEPARATOR = "\n";
 
 	private static final String VALUE_SEPARATOR = ",";
 
 	/**
-	 * Reads a CSV content and stores it into a Map
+	 * Deserializes a CSV content and stores it into a key-value format
 	 * Headings (columns name) must be unique and non-blank
 	 * CSV must not contain line feeds and comma in headings and values
 	 *
 	 * @param csv - the file contents to parse
 	 *
-	 * @return - maps where keys where the headings of the CSV, and values the
+	 * @return - maps where keys are the headings of the CSV, and values the
 	 * 	corresponding values
 	 * 	In case of null or blank input or invalid heading, empty List is returned
 	 */
-	public List<Map<String, String>> parse(String csv) {
+	public List<Map<String, String>> deserialize(String csv) {
 		if (csv == null)
 			return List.of();
 
