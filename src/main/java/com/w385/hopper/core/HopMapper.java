@@ -46,10 +46,10 @@ public final class HopMapper {
 	 */
 	public Optional<Hop> toObject(Map<String, String> hop) {
 		String account = hop.get(ACCOUNT_KEY);
-		Instant timestamp = transformTimestamp(hop.get(DATETIME_KEY));
-		Status status = transformStatus(hop.get(STATUS_KEY));
-		Integer sourceWorld = transformSourceWorld(hop.get(SOURCE_WORLD_KEY));
-		Integer destinationWorld = transformDestinationWorld(hop.get(DESTINATION_WORLD_KEY));
+		Instant timestamp = timestampFromString(hop.get(DATETIME_KEY));
+		Status status = statusFromString(hop.get(STATUS_KEY));
+		Integer sourceWorld = sourceWorldFromString(hop.get(SOURCE_WORLD_KEY));
+		Integer destinationWorld = destinationWorldFromString(hop.get(DESTINATION_WORLD_KEY));
 
 		// constructor can't be called without causing NPE
 		if (destinationWorld == null)
@@ -83,7 +83,7 @@ public final class HopMapper {
 	 * @return - the timestamp as a LocalDateTime, if transformation cannot
 	 * 	be done, returns null
 	 */
-	private static Instant transformTimestamp(String timestamp) {
+	private static Instant timestampFromString(String timestamp) {
 		if (timestamp == null)
 			return null;
 		if (! timestamp.matches("\\d+"))
@@ -101,7 +101,7 @@ public final class HopMapper {
 	 * @return - the status as an enum member, if transformation cannot
 	 * 	be done, returns null
 	 */
-	private static Status transformStatus(String status) {
+	private static Status statusFromString(String status) {
 		if (status == null)
 			return null;
 
@@ -123,7 +123,7 @@ public final class HopMapper {
 	 * @return - the source world as a nullable Integer, if transformation
 	 *  cannot be done, returns null
 	 */
-	private static Integer transformSourceWorld(String sourceWorld) {
+	private static Integer sourceWorldFromString(String sourceWorld) {
 		if (sourceWorld == null)
 			return null;
 		if (sourceWorld.isBlank())
@@ -141,7 +141,7 @@ public final class HopMapper {
 	 * @return - the destination world as a primitive int, if transformation
 	 *  cannot be done, returns null
 	 */
-	private static Integer transformDestinationWorld(String destinationWorld) {
+	private static Integer destinationWorldFromString(String destinationWorld) {
 		if (destinationWorld == null)
 			return null;
 		if (destinationWorld.isBlank())
