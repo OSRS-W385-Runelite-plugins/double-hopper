@@ -2,8 +2,7 @@ package com.w385.hopper.core;
 
 import java.util.*;
 
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.*;
 
 /**
  * CSV serializer and deserializer
