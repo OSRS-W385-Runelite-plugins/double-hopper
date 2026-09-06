@@ -11,27 +11,27 @@ import static java.util.stream.Collectors.toList;
 public final class HopMapper {
 
 	/**
-	 * The name of the account column in the CSV
+	 * The key for the account field
 	 */
 	private static final String ACCOUNT_KEY = "account";
 
 	/**
-	 * The name of the datetime column in the CSV
+	 * The key for the instant field
 	 */
 	private static final String DATETIME_KEY = "timestamp";
 
 	/**
-	 * The name of the status column in the CSV
+	 * The key for the status field
 	 */
 	private static final String STATUS_KEY = "status";
 
 	/**
-	 * The name of the source world column in the CSV
+	 * The key for the source world field
 	 */
 	private static final String SOURCE_WORLD_KEY = "from_world";
 
 	/**
-	 * The name of the destination world column in the CSV
+	 * The key for the destination world field
 	 */
 	private static final String DESTINATION_WORLD_KEY = "to_world";
 
@@ -45,17 +45,18 @@ public final class HopMapper {
 	 * 	couldn't be transformed
 	 */
 	public Optional<Hop> toObject(Map<String, String> hop) {
-		String account = hop.get(ACCOUNT_KEY);
-		Instant timestamp = timestampFromString(hop.get(DATETIME_KEY));
-		Status status = statusFromString(hop.get(STATUS_KEY));
-		Integer sourceWorld = sourceWorldFromString(hop.get(SOURCE_WORLD_KEY));
 		Integer destinationWorld = destinationWorldFromString(hop.get(DESTINATION_WORLD_KEY));
 
-		// constructor can't be called without causing NPE
+		// factory can't be called without causing NPE
 		if (destinationWorld == null)
 			return Optional.empty();
 
-		return Hop.create(account, timestamp, status, sourceWorld, destinationWorld);
+		return Hop.create(
+			hop.get(ACCOUNT_KEY),
+			timestampFromString(hop.get(DATETIME_KEY)),
+			statusFromString(hop.get(STATUS_KEY)),
+			sourceWorldFromString(hop.get(SOURCE_WORLD_KEY)),
+			destinationWorld);
 	}
 
 	/**
@@ -66,13 +67,12 @@ public final class HopMapper {
 	 * @return - the created map
 	 */
 	public Map<String, String> toMap(Hop hop) {
-		return new HashMap<>() {{
-			put(ACCOUNT_KEY, hop.account);
-			put(DATETIME_KEY, String.valueOf(hop.instant.getEpochSecond()));
-			put(STATUS_KEY, hop.status.name());
-			put(SOURCE_WORLD_KEY, Objects.toString(hop.fromWorld, ""));
-			put(DESTINATION_WORLD_KEY, String.valueOf(hop.toWorld));
-		}};
+		return Map.of(
+			ACCOUNT_KEY, hop.account,
+			DATETIME_KEY, String.valueOf(hop.instant.getEpochSecond()),
+			STATUS_KEY, hop.status.name(),
+			SOURCE_WORLD_KEY, Objects.toString(hop.fromWorld, ""),
+			DESTINATION_WORLD_KEY, String.valueOf(hop.toWorld));
 	}
 
 	/**
