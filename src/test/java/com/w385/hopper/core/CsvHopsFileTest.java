@@ -167,6 +167,8 @@ public class CsvHopsFileTest {
 	/**
 	 * Generates Hops with random values
 	 *
+	 * @param count - the number of Hops to generate
+	 *
 	 * @return - the generated Hops
 	 */
 	private static Hop[] randomHops(int count) {
