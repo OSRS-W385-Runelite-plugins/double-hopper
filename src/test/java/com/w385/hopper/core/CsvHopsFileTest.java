@@ -26,6 +26,8 @@ public class CsvHopsFileTest {
 
 	private static final Charset CHARSET = US_ASCII;
 
+	private static final Comparator<String> KEY_ORDER = Comparator.naturalOrder();
+
 	@ClassRule
 	public static TemporaryFolder workingDirectory = new TemporaryFolder();
 
@@ -33,12 +35,10 @@ public class CsvHopsFileTest {
 	public void firstInsertionPutsHeadingsAndValues() throws IOException {
 		Path path = temporaryFile();
 		this.hops.add(path, randomHop());
-		assertThat(Files.readAllLines(path, CHARSET).size(), is(2));
+		assertThat(lines(path).size(), is(2));
 	}
 
 	@Test
-	// FIXME: iteration order is currently defined by a seed set at JVM startup
-	// 		-> consistent, but differs between JVM / processes
 	public void valuesAreInsertedInCorrespondingColumns() throws IOException {
 		// given: a hop to store
 		Path path = temporaryFile();
@@ -48,7 +48,7 @@ public class CsvHopsFileTest {
 		this.hops.add(path, hop);
 
 		// then: values should be inserted in corresponding columns
-		String csv = Files.readString(path,CHARSET);
+		String csv = Files.readString(path, CHARSET);
 		Map<String, String> storedMap = this.codec.deserialize(csv).get(0);
 		assertThat(storedMap, is(this.mapper.toMap(hop)));
 	}
@@ -57,7 +57,7 @@ public class CsvHopsFileTest {
 	public void nextInsertionsPutValuesOnly() throws IOException {
 		Path path = temporaryFileWithContent(randomHop());
 		this.hops.add(path, randomHop());
-		assertThat(Files.readAllLines(path, CHARSET).size(), is(3));
+		assertThat(lines(path).size(), is(3));
 	}
 
 	@Test
@@ -82,6 +82,22 @@ public class CsvHopsFileTest {
 		assertThat(last, is(hop));
 	}
 
+	@Test
+	public void columnsOrderIsConsistentAcrossJvms() throws IOException {
+		// given: a blank file to work with
+		Path path = temporaryFile();
+
+		// when: insert inserting a first Hop
+		Hop hop = randomHop();
+		this.hops.add(path, hop);
+
+		// then: headings should have been written in correct order
+		List<String> correctOrder = this.mapper.toMap(hop).keySet().stream()
+			.sorted(KEY_ORDER)
+			.collect(toList());
+		assertThat(headings(path), is(correctOrder));
+	}
+
 	/**
 	 * Creates a new file inside the working directory
 	 *
@@ -98,11 +114,14 @@ public class CsvHopsFileTest {
 	 */
 	private Path temporaryFileWithContent(Hop ...hops) throws IOException {
 		Path path = workingDirectory.newFile().toPath();
+
 		List<Map<String, String>> maps = Arrays.stream(hops)
 			.map(this.mapper::toMap)
+			.map(this::orderedMap)
 			.collect(toList());
-		String csv  = this.codec.serialize(maps);
-		Files.writeString(path, csv, CHARSET);
+
+		Files.writeString(path, this.codec.serialize(maps), CHARSET);
+
 		return path;
 	}
 
@@ -175,5 +194,46 @@ public class CsvHopsFileTest {
 		return IntStream.range(0, count)
 			.mapToObj(i -> randomHop())
 			.toArray(Hop[]::new);
+	}
+
+	/**
+	 * Reads all lines from the given file
+	 *
+	 * @param path - the {@link Path path} to the file to read
+	 * @return - all the lines in the file
+	 *
+	 * @throws IOException - if file couldn't be read
+	 */
+	private static List<String> lines(Path path) throws IOException {
+		return Files.readAllLines(path, CHARSET);
+	}
+
+	/**
+	 * Returns the headings in the file, in order
+	 *
+	 * @param path - the {@link Path path} to the file to get headings from
+	 *
+	 * @return - the headings of the file, in order
+	 *
+	 * @throws IOException - if the file couldn't be read
+	 */
+	private static List<String> headings(Path path) throws IOException {
+		String headings = lines(path).get(0);
+		return Arrays.stream(headings.split(",", -1))
+			.collect(toList());
+	}
+
+	/**
+	 * Sorts the given map, so keys order is compatible with add() method
+	 * Useful to rely on file content not writen by add()
+	 *
+	 * @param map - the map to sort
+	 *
+	 * @return - the sorted map
+	 */
+	private Map<String, String> orderedMap(Map<String, String> map) {
+		Map<String, String> sorted = new TreeMap<>(KEY_ORDER);
+		sorted.putAll(map);
+		return sorted;
 	}
 }

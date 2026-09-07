@@ -7,6 +7,7 @@ import java.util.*;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.file.StandardOpenOption.APPEND;
+import static java.util.Comparator.naturalOrder;
 import static java.util.stream.Collectors.*;
 
 /**
@@ -21,6 +22,8 @@ public final class CsvHopsFile {
 	private static final Charset CHARSET = US_ASCII;
 
 	private static final String LINE_SEPARATOR = "\n";
+
+	private static final Comparator<String> KEY_ORDER = naturalOrder();
 
 	public CsvHopsFile(CsvCodec codec, HopMapper mapper) {
 		this.codec = codec;
@@ -38,9 +41,15 @@ public final class CsvHopsFile {
 	 */
 	public void add(Path file, Hop hop) throws IOException {
 		Map<String, String> map = this.mapper.toMap(hop);
+
+		var orderedMap = new LinkedHashMap<String, String>();
+		map.keySet().stream()
+			.sorted(KEY_ORDER)
+			.forEach(key -> orderedMap.put(key, map.get(key)));
+
 		if (isEmpty(file))
-			appendHeadings(file, map.keySet());
-		appendValues(file, map);
+			appendHeadings(file, orderedMap.keySet());
+		appendValues(file, orderedMap);
 	}
 
 	/**
