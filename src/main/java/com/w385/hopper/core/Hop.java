@@ -48,7 +48,7 @@ public final class Hop {
 	 * @param instant - when did the attempt happened, millis and nanos will be ignored
 	 * @param status - the status of the attempt
 	 * @param fromWorld - the world the player was on, null in case of login screen
-	 * @param toWorld - the world the player wanted to go to
+	 * @param toWorld - the world the player wanted to go to, must differ from fromWorld
 	 *
 	 * @return - the created Hop, or none if validation failed
 	 */
